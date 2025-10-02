@@ -283,7 +283,6 @@ return {
       attach_jdtls()
     end,
   },
-
   { "folke/which-key.nvim" },
 
   {
