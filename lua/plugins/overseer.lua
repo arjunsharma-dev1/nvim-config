@@ -6,10 +6,9 @@ return {
       require("overseer").setup()
     end,
     keys = function(_, keys)
-      -- extend the existing <leader>m group
       return vim.list_extend(keys, {
         {
-          "<leader>mR", -- capital R to avoid conflicts with LazyVim defaults
+          "<leader>mR",
           function()
             local pickers = require("telescope.pickers")
             local finders = require("telescope.finders")
@@ -18,7 +17,34 @@ return {
             local action_state = require("telescope.actions.state")
             local overseer = require("overseer")
 
+            -- 🔒 Cache helpers
+            local function get_project_root()
+              return vim.fn.getcwd()
+            end
+
+            local function cache_file()
+              return get_project_root() .. "/.nvim_main_class"
+            end
+
+            local function save_main_class(main_class)
+              local f = io.open(cache_file(), "w")
+              if f then
+                f:write(main_class)
+                f:close()
+              end
+            end
+
+            local function load_main_class()
+              local f = io.open(cache_file(), "r")
+              if f then
+                local class = f:read("*l")
+                f:close()
+                return class
+              end
+            end
+
             local function run_maven_with_class(main_class)
+              save_main_class(main_class)
               local task = overseer.new_task({
                 cmd = { "mvn" },
                 args = { "compile", "exec:java", "-Dexec.mainClass=" .. main_class },
@@ -59,7 +85,21 @@ return {
                 :find()
             end
 
-            pick_main_class()
+            -- 🧠 Try cached class first
+            local cached = load_main_class()
+            if cached then
+              --vim.ui.select({ "Yes", "No" }, {
+              --  prompt = "Reuse last main class: " .. cached .. "?",
+              --}, function(choice)
+              --  if choice == "Yes" then
+              run_maven_with_class(cached)
+              --  else
+              --    pick_main_class()
+              --  end
+              -- end)
+            else
+              pick_main_class()
+            end
           end,
           desc = "Run Maven Project",
         },
