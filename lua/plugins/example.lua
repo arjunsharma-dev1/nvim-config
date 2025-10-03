@@ -55,10 +55,31 @@ return {
     -- change some options
     opts = {
       defaults = {
-        layout_strategy = "horizontal",
+        layout_strategy = "vertical",
         layout_config = { prompt_position = "top" },
         sorting_strategy = "ascending",
         winblend = 0,
+        wrap_results = true,
+        preview = {
+          wrap = true,
+        },
+        pickers = {
+          find_files = {
+            preview = {
+              wrap = true,
+            },
+          },
+          live_grep = {
+            preview = {
+              wrap = true,
+            },
+          },
+          grep_string = {
+            preview = {
+              wrap = true,
+            },
+          },
+        },
       },
     },
   },
@@ -73,6 +94,7 @@ return {
         -- pyright will be automatically installed with mason and loaded with lspconfig
         pyright = {},
         jdtls = {},
+        lemminx = {},
       },
       setup = {
         jdtls = function()
@@ -369,6 +391,7 @@ return {
         "vim",
         "yaml",
         "java",
+        "xml",
       },
     },
   },
@@ -428,6 +451,8 @@ return {
         "flake8",
         "java-debug-adapter",
         "java-test",
+        "lemminx",
+        "xmllint",
       },
     },
   },
