@@ -88,20 +88,35 @@ return {
             -- 🧠 Try cached class first
             local cached = load_main_class()
             if cached then
-              --vim.ui.select({ "Yes", "No" }, {
-              --  prompt = "Reuse last main class: " .. cached .. "?",
-              --}, function(choice)
-              --  if choice == "Yes" then
               run_maven_with_class(cached)
-              --  else
-              --    pick_main_class()
-              --  end
-              -- end)
             else
               pick_main_class()
             end
           end,
           desc = "Run Maven Project",
+        },
+        {
+          "<leader>mb",
+          function()
+            local overseer = require("overseer")
+
+            local function mvn_build()
+              local task = overseer.new_task({
+                cmd = { "mvn" },
+                args = { "clean", "package" },
+                cwd = vim.fn.getcwd(),
+                components = {
+                  "default",
+                  { "open_output", direction = "dock", focus = true, on_start = "always" },
+                },
+              })
+              task:start()
+            end
+
+            mvn_build()
+          end,
+          -- 🧠 Try cached class first
+          desc = "Build Maven Project",
         },
       })
     end,
